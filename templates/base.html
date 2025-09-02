@@ -1,0 +1,178 @@
+{% load static %}
+<html>
+    <head>
+        <title>
+            {% block title %}
+            {% endblock title %}
+        </title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+        <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+
+    </head>
+
+    <body>
+
+          <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container">
+                <img src="{% static 'img/favicon.png' %}" width="50px" height="30px">
+                <a class="navbar-brand" href="{% url 'home' %}">Papillo kata</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'callus' %}">Call us</a></li>
+                    {% if user.role == 'admin' or user.is_superuser %}
+                    <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">Blog</a>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'posts_list' %}">All posts</a></li>
+                            <li><a class="dropdown-item" href="{% url 'posts_list' %}?author={{ user.id }}">My posts({{ user.username }})</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'create_post' %}">+ New post</a></li>
+                          </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'posts_list' %}">Blog</a></li>
+                    {% endif %}
+                    
+                    {% if user.role == 'admin' or user.is_superuser %}
+                        <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">Shop</a>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'products_list' %}">Products</a></li>
+                            <li><a class="dropdown-item" href="{% url 'products_list' %}?product_owner={{ user.id }}">My products({{ user.username }})</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'product_create' %}">+ New product</a></li>
+                          </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'products_list' %}">Shop</a></li>
+                    {% endif %}
+                    <li class="mx-5 text-white nav-item"></li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link btn btn-outline-info btn-lg mx-sm-0 mt-sm-2 mb-3 mb-sm-3 mt-lg-0 " href="{% url 'profile' %}">your profile</a></li>
+                        {% if user.is_authenticated and user.is_superuser %}
+                         <li class="nav-item"><a class="nav-link btn btn-success btn-lg mx-sm-0 mx-lg-2 mt-lg-0" href="/admin/">Admin panel</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link btn btn-outline-primary btn-lg  mx-sm-0 mt-sm-2 mx-0 mb-2 mx-lg-2 mt-lg-0" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link btn btn-outline-primary btn-lg mt-sm-2 mx-0 mb-2 mt-lg-0" href="{% url 'signup' %}">Signup</a></li>
+                    {% endif  %}
+                    <li class="mx-2"></li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link btn btn-outline-warning btn-lg mt-sm-2 mx-0 mb-2 mt-lg-0" href="{% url 'chart_detail' %}"><i class="fa fa-shopping-basket"></i>
+                            {{ CHART.items.count }}
+                        </a></li>
+                    {% endif %}
+
+                    </ul>
+                </div>
+                </div>
+            </nav>
+            
+        <br><br>    
+
+         {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show container" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+            
+        {% endblock content %}
+
+        <br><br>
+        <br><br>
+        <br><br>
+
+
+        <footer class="bg-dark text-white pt-1 pb-1">
+        <div class="container text-center text-md-start">
+            <div class="row text-center text-md-start">
+
+            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold text-warning">About we</h5>
+                <p>
+                     papillokata online shop
+                    we sale electonic and computer and mobile addons in this shop.
+                    we have best price between others.
+                </p>
+            </div>
+
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Links</h5>
+                <p><a href="{% url 'home' %}" class="text-white text-decoration-none">Home</a></p>
+                <p><a href="{% url 'about' %}" class="text-white text-decoration-none">About we</a></p>
+                <p><a href="{% url 'callus' %}" class="text-white text-decoration-none">Call us</a></p>
+            </div>
+
+            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Call us</h5>
+                <p><i class="fas fa-home me-3"></i>Iran/Tehran/tehranpars</p>
+                <p><i class="fas fa-envelope me-3"></i> papillokata@gmail.com</p>
+                <p><i class="fas fa-phone me-3"></i> +98 9192180415</p>
+            </div>
+
+            <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold text-warning">Follow us</h5>
+                <a href="#" class="btn btn-outline-primary btn-floating m-1"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="btn btn-outline-light btn-floating m-1"><i class="fab fa-x"></i></a>
+                <a href="#" class="btn btn-outline-danger btn-floating m-1"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="btn btn-outline-info btn-floating m-1"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            </div>
+
+                <!-- خط جداکننده -->
+                <hr class="mb-4">
+
+                <!-- کپی‌رایت -->
+                <div class="row align-items-center">
+                <div class="col-md-7 col-lg-8">
+                    <p>© 2025 All rights reserved | Developed by <strong class="text-warning"> Team Us</strong></p>
+                </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFY
+        lzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- for click and copy text -->
+        <script>
+          function copyToClipboard() {
+            const text = document.getElementById("link").value;
+            const text_is_copyed = document.getElementById('text-is-copyed');
+            navigator.clipboard.writeText(text)
+              .then(() => {
+                text_is_copyed.innerHTML = '✅ Link copy in your clipboard !';
+              })
+              .catch(err => {
+                text_is_copyed.innerHTML = "❌ Somthing went wrong !";
+                console.error("Error:", err);
+              });
+            }
+
+            document.getElementById('goToComments').addEventListener('click', function () {
+            const commentsTab = new bootstrap.Tab(document.querySelector('#comments-tab'));
+            commentsTab.show();
+
+            const tabSection = document.getElementById('productTabs');
+            tabSection.scrollIntoView({ behavior: 'smooth' });
+          });
+
+            
+            
+        </script>
+    </body>
+</html>

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load custom_filters %}
+
+{% block title %}
+  Check Out
+{% endblock title %}
+
+{% block content %}
+  
+  <div class="container">
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+
+        <div style="box-shadow: 0.5px 1px 30px 0.4px grey;" class="mt-5 mb-5 p-3 rounded rounded-5">
+          <h4>Chart items:</h4>
+          {% for item in chart.items.all %}
+            <div class="container" style="border-left: 2px solid orange;">
+              <span>{{ item.product.name }}</span><br>
+              <span>{{ item.quantity }} Number</span><br>
+              <span>{{ item.color }}</span>
+            </div>
+            <hr>
+          {% endfor %}
+          <p class="bg-success col-2 text-center text-white" style="border-radius: 100px;"><strong>TOTAL:</strong> ${{ total|format_price }}</p>
+        </div>
+
+          <button type="submit" class="btn btn-outline-success">order registration</button>
+        </form>
+
+  </div>
+
+  <script type="text/javascript">
+    var address = document.getElementById('id_address');
+    address.value = '{{ usrAddress }}'
+  </script>
+
+{% endblock content %}

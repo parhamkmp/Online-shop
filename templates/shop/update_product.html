@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}
+	Edit product: {{ product.name }}
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-7">
+                <h1>Update(<strong>{{ product.name }}</strong>) Product:</h1>
+                <hr>
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary">Update product info</button>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <br><br>
+    <br><br>
+
+{% endblock content %}

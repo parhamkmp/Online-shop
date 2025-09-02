@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+    Call Us
+{% endblock title %}
+
+{% block content %}
+
+    
+
+<body style="background: linear-gradient(to right, #fdfbfb, #ebedee);background-image: url('{% static "img/bg9.png" %}');background-size: cover;background-position: center;background-repeat: no-repeat;">
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="fw-bold" style="color: #fff;">Contact Us</h1>
+    <p class="text-light">The ways to contact our group are listed below.</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div style="
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        color: #fff;
+      ">
+        <h4 class="mb-4">📍 Workplace address</h4>
+        <p style="font-size: 16px;">IRAN / Tehran - Tehran Pars</p>
+
+        <hr style="border-color: rgba(255,255,255,0.3);">
+
+        <h4 class="mb-4">📞 Contact information</h4>
+        <ul style="list-style: none; padding: 0; font-size: 16px;">
+          <li>📱 Mobile: 09358632319</li>
+          <li>☎️ Home TelePhone: 021-77082599</li>
+          <li>📧 Email: papillokata@gmail.com</li>
+        </ul>
+
+        <hr style="border-color: rgba(255,255,255,0.3);">
+
+        <h4 class="mb-4">🌐 Social media:</h4>
+        <ul style="list-style: none; padding: 0; font-size: 16px;">
+          <li>📸 Instagram: <a href="https://instagram.com/papillokata" target="_blank" style="color: #fff; text-decoration: underline;">@papillokata</a></li>
+          <li>💬 Telegram: <a href="https://t.me/papillokata" target="_blank" style="color: #fff; text-decoration: underline;">@papillokata</a></li>
+          <li>🎥 YouTube: <a href="https://youtube.com/@papillokata" target="_blank" style="color: #fff; text-decoration: underline;">@papill_clip</a></li>
+          <li>🌐 Website: <a href="https://papillokata.com" target="_blank" style="color: #fff; text-decoration: underline;">papillokata.com</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+

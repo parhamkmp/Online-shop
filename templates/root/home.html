@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    papillo kata online shop
+{% endblock title %}
+
+{% block content %}
+    <section class="hero">
+        <div class="container blurred-box">
+            <h1 class="display-4">Welcome to papillo kata online shop</h1>
+            <br><br>
+            <a href="{% url 'about' %}" class="btn btn-outline-dark btn-lg col-3">About us</a>
+            <a href="{% url 'callus' %}" class="btn btn-info btn-lg col-3">Call Us</a>
+        </div>
+    </section>
+{% endblock content %}
+

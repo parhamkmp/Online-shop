@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    papillo kata blog
+{% endblock title %}
+
+{% block content %}
+<div class="container-fluid">
+      <h1 class="text-center mb-5 display-3">WEBLOG</h1>
+      <hr class="container mb-5">
+    <div class="row">
+
+    <div class="col-md-3 col-lg-3 mb-4 " style="border-right: 2px grey solid; padding-right: 10px; border-radius: 2px;">
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Filter Products</h5>
+          <form method="get">
+            {{ filter.form|crispy }}
+            <button type="submit" class="btn btn-info w-100 mt-3">Filter</button>
+          </form>
+        </div>
+      </div>
+  </div>
+
+        <div class="col-md-9 col-lg-9">
+            <div class="row g-4">
+                
+                {% for post in posts %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card-container shadow">
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="card-image">
+                        <div class="card-overlay">
+                            <h2>{{ post.title|truncatewords:5 }}</h2>
+                            <p>{{ post.body|truncatewords:10 }}</p>
+                            <a href="{{ post.get_absolute_url }}" class="btn btn-outline-warning">Read More</a>
+                        </div>
+                    </div>
+                </div>
+
+                {% empty %}
+                    <div class="container">
+                        <p class="alert alert-warning text-center">No post found! 😞</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <br><br>
+
+            <div class="container mt-5 ">
+                <ul class="pagination justify-content-center">
+                  {% if page_obj.has_previous %}
+                    <li class="page-item">
+                      <a class="page-link" href="?page=1">« First</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previos</a>
+                    </li>
+                  {% endif %}
+
+                  <li class="page-item active">
+                    <span class="page-link bg-danger border-danger">
+                      Page {{ page_obj.number }} from {{ page_obj.paginator.num_pages }}
+                    </span>
+                  </li>
+
+                  {% if page_obj.has_next %}
+                    <li class="page-item text">
+                      <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">End »</a>
+                    </li>
+                  {% endif %}
+                </ul>
+            </div>
+
+
+    </div>
+  </div>
+</div>
+
+                
+
+
+
+
+{% endblock content %}

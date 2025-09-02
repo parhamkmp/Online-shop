@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+
+{% block title %}
+	Chart of {{ chart.user.username }}
+{% endblock title %}
+
+
+{% block content %}
+
+
+
+	<h2 class="text-center mb-5"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Your chart</h2>
+
+	{% if chart and chart.items.all %}
+	  <ul>
+	    {% for item in chart.items.all %}
+
+
+		  <div class="container py-3">
+			  <div class="cart-card row align-items-center">
+			    <div class="col-md-3 text-center">
+			      <img src="{{ item.product.image_product.url }}" alt={{ item.product.name }} class="product-img-chart">
+			    </div>
+			    <div class="col-md-6">
+			      <h3 class="mb-4">{{ item.product.name }}</h3>
+			      <strong class="mb-3">Color: </strong><span>{{ item.color }}</span>
+			      <br class="mb-2">
+			      <strong class="mb-1">Number of products: </strong> <span>{{ item.quantity }}</span>
+			      <br class="mt-2">
+			      
+			      {% if item.product.discount_price %}
+			      
+			      	<strong class="mb-1">Unit price before discount: </strong> <span class="price-tag">${{ item.product.discount_price|format_price }}</span>
+			      	<br>
+			      	<strong class="mb-1">You made a profit of <span class="price-tag text-primary">${{ item.product.price|minus:item.product.discount_price|format_price }}</span> on each purchase of this product</strong> 
+			      
+			      {% else %}
+			      	<strong class="mb-1">Unit price: </strong> <span class="price-tag">${{ item.product.price|format_price }}</span>
+			      
+			      {% endif %}
+
+
+			      <div class="delete">
+             	   <button type="button" class="btn btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#deleteModal" style="border-radius: 100px;">
+                 	 <i class="fa fa-trash" aria-hidden="true"></i>
+                	 </button>
+		              <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		              <div class="modal-dialog">
+		                <div class="modal-content">
+		                  <div class="modal-header">
+		                    <h5 class="modal-title" id="deleteModalLabel">Delete confirmation</h5>
+		                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+		                  </div>
+		                  <div class="modal-body">
+		                    Are you sure to delete this product from chart ?
+		                  </div>
+		                  <div class="modal-footer">
+		                    <form method="POST" action="{% url 'delete_item' item.id %}">
+		                      {% csrf_token %}
+		                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, please cancel</button>
+		                      <button type="submit" class="btn btn-danger">Yes, confirm</button>
+		                    </form>
+		                  </div>
+		                </div>
+		              </div>
+		            </div>
+		          </div>
+
+
+			    </div>
+			    <div class="col-md-3 text-end">
+			      <p class="total-price text-danger">Total price: ${{ item.get_total_price|format_price }}</p>
+			      <!-- <button class="btn btn-outline-primary mt-3">ویرایش سفارش</button> -->
+			    </div>
+			  </div>
+			</div>
+
+
+
+
+				
+			</div>
+
+		{% endfor %}
+
+		<br><br><br>
+
+		<div class="row container-fluid alert alert-success display-6">
+			<div class="col-9">
+					Amount payable: ${{ chart.get_total_price_chart|format_price }}	
+			</div>
+
+			<div class="col-3">
+				<a href="{% url 'checkout' %}" class="btn btn-outline-primary btn-lg col-12">continue payment</a>
+			</div>
+
+			</div>
+		</div>
+
+	  </ul>
+	{% else %}
+	  <div class="alert alert-primary display-4  p-5 container">
+	  	Your chart is empty 
+	  	<hr class="container">
+	  	<a href="{% url 'products_list' %}" class="btn btn-outline-dark col-12 mt-4">Go shop</a>
+	  </div>
+	{% endif %}
+
+
+{% endblock content %}

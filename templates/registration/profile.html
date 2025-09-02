@@ -1,0 +1,629 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% load custom_filters %}
+
+{% block title %}
+  {{ user.username }} profile
+{% endblock title %}
+
+{% block content %}
+
+{% if user.role == 'admin' or user.is_superuser %}
+  <body style="background-image: url('{% static "img/bg11.jpg" %}');background-size: cover;">  
+  </body>
+{% else %}
+  <body style="background-image: url('{% static "img/bg3.png" %}');background-size: cover;">  
+  </body>
+{% endif %}
+
+
+
+{% if user.role == 'admin' or user.is_superuser %}
+  <div class="container mt-5">
+    <div class="row g-4">
+    
+      <div class="col-md-6 col-lg-6">
+        <div class="card shadow-sm bg-transparent border-0">
+          <div class="card-header bg-info text-white text-center" style="border-top-left-radius: 10px;border-top-right-radius: 10px;">
+            <h4 class="mb-0 di">👤 Your Profile</h4>
+          </div>
+          <div class="card-body"style="
+              background: rgba(255, 255, 255, 0.1);
+              backdrop-filter: blur(12px);
+              -webkit-backdrop-filter: blur(12px);
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+              color: #fff;
+              border-bottom-left-radius: 10px;
+              border-bottom-right-radius: 10px;
+            ">
+            <div class="row">
+              <div class="col-4">
+                {% if user.image_profile %}
+                  <img src="{{ user.image_profile.url }}"
+                       alt="Profile"
+                       class="img-thumbnail rounded-circle profile-pic justify-content-center"
+                       style="width: 100px;">
+
+                  {% else %}
+                  <img src="https://api.dicebear.com/6.x/initials/svg?seed={{ user.username }}" alt="profile" class="img-thumbnail rounded-circle profile-pic justify-content-center"style="width: 100px; cursor: pointer;">
+                {% endif %}
+              </div>
+              <div class="col mt-4">
+                <p><strong>First name: </strong>{{ user.first_name }}</p>
+                <p><strong>Last name: </strong>{{ user.last_name }}</p>
+                {% if user.is_superuser %}
+                  <p class="bg-danger w-75 text-center rounded text-white" style="border-radius: 100px;padding: 1px;"><strong>Role:</strong> *Super User</p>
+                {% elif user.role == 'admin' %}
+                  <p class="bg-success w-50 text-center rounded text-white" style="border-radius: 100px;padding: 1px;"><strong>Role:</strong> {{ user.role }}</p>
+                {% endif %}
+              </div>
+            </div>
+              <hr>
+            <div class="text-center mx-5">
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Phone number:</strong> {{ user.phone_number }}</p>
+            <p><strong>Address:</strong> {{ user.address }}</p>
+          </div>
+
+            <div class="mt-4 col-12">
+
+              <div class="row">
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary col-4 mx-5 btn-sm col-md-4">Edit Profile</a>
+                <a href="{% url 'password_change' %}" class="btn btn-warning col-5 btn-sm col-md-4">Change password</a>
+
+              </div>
+
+              <form action="/accounts/logout/" method="POST" class="col-12 mt-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger col-12 btn-sm">LogOut</button>
+              </form>
+
+            </div>
+          
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card bg-transparent border-0">
+          <div class="card-header bg-success text-white text-center" style="border-top-left-radius:10px;border-top-right-radius:10px;">
+            <h4 class="mb-0">📝 Your published recent Posts</h4>
+          </div>
+          <div class="card-body"
+
+          style="
+              background: rgba(255, 255, 255, 0.1);
+              backdrop-filter: blur(10px);
+              -webkit-backdrop-filter: blur(40px);
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+              color: #fff;
+              border-bottom-left-radius: 10px;    
+              border-bottom-right-radius: 10px;    
+          ">
+            <ul class="list-group list-group-flush bg-transparent">
+              {% for post in recent_posts %}
+                <li class="list-group-item bg-transparent">
+                  <a href="{{ post.get_absolute_url }}" class="fw-bold text-dark" style="font-size: 17px">{{ post.title }}</a>
+                  <br><small class="text-white bg-secondary" style="padding: 2px;border-radius: 50px">Last update at ({{ post.last_update }})</small>
+                </li>
+              {% empty %}
+                <li class="list-group-item text-white text-center bg-transparent">No posts yet</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+          <br><br>
+
+          <div class="card bg-transparent border-0">
+          <div class="card-header bg-dark text-white text-center" style="border-top-left-radius:10px;border-top-right-radius:10px;">
+            <h4 class="mb-0">🛍️ Your recent products added to shop !</h4>
+          </div>
+          <div class="card-body"
+          style="
+              background: rgba(255, 255, 255, 0.1);
+              backdrop-filter: blur(10px);
+              -webkit-backdrop-filter: blur(10px);
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+              color: #fff;
+              border-bottom-left-radius: 10px;
+              border-bottom-right-radius: 10px;
+          ">
+            <ul class="list-group list-group-flush bg-transparent">
+              {% for product in recent_products %}
+                <li class="list-group-item bg-transparent">
+                  <a href="{{ product.get_absolute_url }}" class="fw-bold text-dark" style="font-size: 17px">{{ product.name }}</a><br>
+                  <span>{{ product.caption|truncatewords:10 }}</span><br>
+                  {% if product.price == 0 %}
+                    <small class="bg-warning text-dark  p-1" style="border-radius: 50px">A customer will call you for a price</small>
+                  {% else %}
+                    <small class="bg-success text-white p-1" style="border-radius: 50px">${{ product.price }}</small>
+                  {% endif %}
+                </li>
+              {% empty %}
+                <li class="list-group-item text-white text-center bg-transparent">No products yet</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
+
+  
+  <hr class="container text-white my-5">
+
+  <div class="mt-5 container">
+
+  <h2 class="mb-4 text-center text-white "><i class="fa fa-clock"></i> orders history</h2>
+
+  <div class="row">
+    {% if user.is_superuser or user.role == 'admin' %}
+      {% for i in superuser_orders_page %}
+        <div class="col-md-4 py-4">
+          <div class="card summary-card bg-transparent border-0 text-center h-100">
+            <div class="card-body" style="
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(10px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                border-radius: 20px;
+                color: #fff;">
+              <h5 class="card-title mb-3">Order ID: {{ i.id }}</h5>
+
+              <ul class="list-unstyled small mb-4">
+                <li class="mb-1"><span class="fw-semibold"><strong>Username:</strong></span> {{ i.user.username }}</li>
+                <li class="mb-1"><span class="fw-semibold"><strong>Email:</strong></span> {{ i.user.email }}</li>
+                <li class="mb-1"><span class="fw-semibold"><strong>Phone number:</strong></span> {{ i.user.phone_number }}</li>
+                <li class="mb-1"><span class="fw-semibold"><strong>Date:</strong></span> {{ i.date|date:"Y/m/d" }}</li>
+                <li class="mb-1"><span class="fw-semibold"><strong>Total price: </strong></span>$ {{ i.total_price|format_price }}</li>
+
+                {% if i.status == 'processing' %}
+                  <li class="mb-1"><span class="bg-secondary p-1 rounded rounded-5 fw-semibold text-white" style="font-size: 12px;"><strong>STATUS</strong>: {{ i.status }}</span></li>
+                {% elif i.status == 'rejected' %}
+                  <li class="mb-1"><span class="bg-danger p-1 rounded rounded-5 fw-semibold" style="font-size: 12px;"><strong>STATUS</strong>: {{ i.status }}</span></li>
+                {% elif i.status == 'accepted' %}
+                  <li class="mb-1"><span class="bg-warning p-1 rounded rounded-5 fw-semibold text-dark" style="font-size: 12px;"><strong>STATUS</strong>: {{ i.status }}</span></li>
+                {% elif i.status == 'delivered' %}
+                  <li class="mb-1"><span class="bg-success p-1 rounded rounded-5 fw-semibold" style="font-size: 12px;"><strong>STATUS</strong>: {{ i.status }}</span></li>
+                {% elif i.status == 'returned' %}
+                  <li class="mb-1"><span class="bg-dark p-1 rounded rounded-5 fw-semibold" style="font-size: 12px;"><strong>STATUS</strong>: {{ i.status }}</span></li>
+                {% endif %}
+              </ul>
+
+              <button
+                type="button"
+                class="btn btn-outline-light col-12 more-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#detailsModal{{ i.id }}">
+                More details
+              </button>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="detailsModal{{ i.id }}" tabindex="-1" aria-labelledby="detailsModalLabel{{ i.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+
+              <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel{{ i.id }}">Details order {{ i.id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <div class="modal-body">
+                <p>Complete order information recorded on
+                  <strong class='bg-warning rounded rounded-5 p-1'>{{ i.date|date:'Y/m/d' }}</strong>
+                </p>
+
+
+                {% if i.status == 'processing' %}
+                  <span class='bg-secondary p-1 rounded rounded-5 text-white'>STATUS: {{ i.status }}</span><br>
+                {% elif i.status == 'rejected' %}
+                  <span class='bg-danger text-white p-1 rounded rounded-5'>STATUS: {{ i.status }}</span><br>
+                {% elif i.status == 'accepted' %}
+                  <span class='bg-warning text-dark p-1 rounded rounded-5'>STATUS: {{ i.status }}</span><br>
+                {% elif i.status == 'delivered' %}
+                  <span class='bg-success text-white p-1 rounded rounded-5'>STATUS: {{ i.status }}</span><br>
+                {% elif i.status == 'returned' %}
+                  <span class='bg-dark text-white p-1 rounded rounded-5'>STATUS: {{ i.status }}</span><br>
+                {% endif %}
+
+                <br>
+                <h3>User information :</h3>
+                <ul class='bg-light border border-3 shadow rounded rounded-5 p-3' style="border-radius: 20px;">
+                    <li class="mb-1 mx-3"><span class="fw-semibold"><strong>First name:</strong></span> {{ i.user.first_name }}</li>
+                    <li class="mb-1 mx-3"><span class="fw-semibold"><strong>Last name:</strong></span> {{ i.user.last_name }}</li>
+                    <li class="mb-1 mx-3"><span class="fw-semibold"><strong>Username:</strong></span> {{ i.user.username }}</li>
+                    <li class="mb-1 mx-3"><span class="fw-semibold"><strong>Email:</strong></span> {{ i.user.email }}</li>
+                    <li class="mb-1 mx-3"><span class="fw-semibold"><strong>Phone number:</strong></span> {{ i.user.phone_number }}</li>
+                    <li class="mb-1 mx-3"><span class="fw-semibold"><strong>Role:</strong></span> {{ i.user.role }}</li>
+                </ul>
+
+                <br/>
+                <h3>Items :</h3>
+                <ul class='bg-light border border-3 shadow rounded rounded-5 p-3' style="border-radius: 20px;">
+                  {% for item in i.items.all %}
+                    <li class="mx-3"><strong>Product: </strong>{{ item.product.name }}</li>
+                    
+                    {% if item.product.discount_price %}
+                      <li class="mx-3"><strong>Price after discount: </strong>${{ item.product.discount_price|format_price }}</li>
+                    {% else %}
+                      <li class="mx-3"><strong>Price: </strong>${{ item.price|format_price }}</li>
+                    {% endif %}
+                    
+                    <li class="mx-3"><strong>Quantity: </strong>{{ item.quantity }}</li>
+                    <li class="mx-3"><strong>Color: </strong>{{ item.color }}</li>
+                    <hr/>
+                  {% endfor %}
+                </ul>
+
+                <br/>
+                <h3>Recipient information and address :</h3>
+                <ul class='bg-light border border-3 shadow rounded rounded-5 p-3' style="border-radius: 20px;">
+                  <li class="mx-3"><strong>Recipient name: </strong>{{ i.recipient_name }}</li>
+                  <li class="mx-3"><strong>Recipient number: </strong>{{ i.user.phone_number }}</li>
+                  <li class="mx-3"><strong>Postal code: </strong>{{ i.postal_code }}</li>
+                  <li class="mx-3"><strong>Address: </strong>{{ i.address }}</li>
+                </ul>
+
+                <h3>Bill :</h3>
+                <ul class='bg-light border border-3 shadow rounded rounded-5 p-3' style="border-radius: 20px;">
+                  {% for item in i.items.all %}
+                    <li class='mb-2 mx-3'>
+                      <strong>{{ item.quantity }}</strong> 
+                      <strong>{{ item.color }}</strong> 
+                      <strong>{{ item.product.name }}</strong>, 
+                      {% if item.product.discount_price %}
+                        <strong class="text-danger">$ {{ item.product.discount_price }}(with a discount)</strong> each
+                      total <strong>${{ item.product.discount_price|multiply:item.quantity|format_price }}</strong>
+                      {% else %}
+                        <strong>$ {{ item.product.price }}</strong> each
+                      total <strong>${{ item.product.price|multiply:item.quantity|format_price }}</strong>
+                      {% endif %}
+                    </li>
+                  {% endfor %}
+                </ul>
+
+                <h5 class='bg-success p-1 w-50 text-white text-center' style='border-radius:100px;'>
+                  Total payment : ${{ i.total_price|format_price }}
+                </h5>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                
+                {% if user.role == 'admin' or user.is_superuser %}
+                  {% if i.status == 'rejected' or i.status == 'delivered' or i.status == 'returned' %}
+
+                    <a href="{% url 'change_order' i.id %}" type="button" class="btn btn-primary disabled">
+                      <i class="fa fa-edit"></i> Change order status
+                    </a>
+
+                  {% else %}
+                    <a href="{% url 'change_order' i.id %}" type="button" class="btn btn-primary">
+                      <i class="fa fa-edit"></i> Change order status
+                    </a>
+                    
+                  {% endif %}
+
+                {% endif %}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-center"><i class="fa fa-times"></i> No orders found!</p>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+</div>
+
+
+
+<div class="container mt-5 ">
+    <ul class="pagination justify-content-center">
+      {% if superuser_orders_page.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1">« First</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previos</a>
+        </li>
+      {% endif %}
+
+      <li class="page-item active">
+        <span class="page-link bg-info border-info">
+          Page {{ superuser_orders_page.number }} from {{ superuser_orders_page.paginator.num_pages }}
+        </span>
+      </li>
+
+      {% if superuser_orders_page.has_next %}
+        <li class="page-item text">
+          <a class="page-link" href="?page={{ superuser_orders_page.next_page_number }}">Next</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ superuser_orders_page.paginator.num_pages }}">End »</a>
+        </li>
+      {% endif %}
+    </ul>
+</div>
+
+
+
+
+
+
+{% else %}
+    <div class="col-12 col-md-8 col-xl-5 col-lg-6 container ">
+      <div class="card bg-transparent border-0">
+        <div class="card-header bg-info text-white text-center" style="border-top-left-radius: 10px;border-top-right-radius: 10px;">
+          <h4 class="mb-0 di">👤 Your Profile</h4>
+        </div>
+        <div class="card-body"
+        style="
+           background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+          color: #fff;
+          border-bottom-left-radius: 10px;
+          border-bottom-right-radius: 10px;
+        ">
+          <div class="row">
+            <div class="col-4">
+              {% if user.image_profile %}
+                <img src="{{ user.image_profile.url }}"
+                     alt="Profile"
+                     class="img-thumbnail rounded-circle profile-pic justify-content-center"
+                     style="width: 100px; cursor: pointer;"
+                     data-bs-toggle="modal"
+                     data-bs-target="#profileModal">
+
+                <div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content bg-light">
+                      <button type="button" class="btn-close btn-close-black p-3"data-bs-dismiss="modal" aria-label="Close"></button>
+                      <div class="modal-body text-center">
+                        <img src="{{ user.image_profile.url }}"
+                             alt="Profile Enlarged"
+                             class="img-fluid rounded">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {% else %}
+                <img src="https://api.dicebear.com/6.x/initials/svg?seed={{ user.username }}" alt="profile" class="img-thumbnail rounded-circle profile-pic justify-content-center"style="width: 100px; cursor: pointer;">
+              {% endif %}
+            </div>
+            <div class="col mt-4">
+              <p><strong>First name: </strong>{{ user.first_name }}</p>
+              <p><strong>Last name: </strong>{{ user.last_name }}</p>
+              <p class="bg-warning w-50 text-center rounded" style="border-radius: 100px;padding: 1px;"><strong>Role:</strong> {{ user.role }}</p>
+            </div>
+          </div>
+            <hr>
+          <div class="text-center mx-5">
+          <p><strong>Username:</strong> {{ user.username }}</p>
+          <p><strong>Email:</strong> {{ user.email }}</p>
+          <p><strong>Phone number:</strong> {{ user.phone_number }}</p>
+          <p><strong>Address:</strong> {{ user.address }}</p>
+        </div>
+
+          <div class="mt-4 col-12">
+
+            <div class="row">
+              <a href="{% url 'edit_profile' %}" class="btn btn-primary col-4 mx-5 btn-sm col-md-4">Edit Profile</a>
+              <a href="{% url 'password_change' %}" class="btn btn-warning col-5 btn-sm col-md-4">Change password</a>
+
+            </div>
+
+            <form action="/accounts/logout/" method="POST" class="col-12 mt-3">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger col-12 btn-sm">LogOut</button>
+            </form>
+
+          </div>
+        
+        </div>
+      </div>
+  </div>
+
+
+
+<hr class="container text-white my-5">
+
+<div class="mt-5 container">
+
+  <h2 class="mb-4 text-center text-white "><i class="fa fa-clock"></i> Your orders history</h2>
+
+  <div class="row">
+    {% for i in orders_page %}
+      <div class="col-md-4 py-4">
+        <div class="card summary-card bg-transparent border-0 text-center h-100">
+          <div class="card-body" style="
+              background: rgba(255, 255, 255, 0.15);
+              backdrop-filter: blur(20px);
+              -webkit-backdrop-filter: blur(10px);
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+              border-radius: 20px;
+              color: #fff;">
+            <h5 class="card-title mb-3">Order ID: {{ i.id }}</h5>
+
+            <ul class="list-unstyled small mb-4">
+              <li class="mb-1"><span class="fw-semibold"><strong>Date:</strong></span> {{ i.date|date:"Y/m/d" }}</li>
+              <li class="mb-1"><span class="fw-semibold"><strong>Total price: </strong></span>$ {{ i.total_price|format_price }}</li>
+
+              {% if i.status == 'processing' %}
+                <li class="mb-1"><span class="bg-secondary p-1 rounded rounded-5 fw-semibold text-white" style="font-size: 12px;"><strong>STATUS</strong>: {{ i.status }}</span></li>
+              {% elif i.status == 'rejected' %}
+                <li class="mb-1"><span class="bg-danger p-1 rounded rounded-5 fw-semibold" style="font-size: 12px;"><strong>STATUS</strong>: {{ i.status }}</span></li>
+              {% elif i.status == 'accepted' %}
+                <li class="mb-1"><span class="bg-warning p-1 rounded rounded-5 fw-semibold text-dark" style="font-size: 12px;"><strong>STATUS</strong>: {{ i.status }}</span></li>
+              {% elif i.status == 'delivered' %}
+                <li class="mb-1"><span class="bg-success p-1 rounded rounded-5 fw-semibold" style="font-size: 12px;"><strong>STATUS</strong>: {{ i.status }}</span></li>
+              {% elif i.status == 'returned' %}
+                <li class="mb-1"><span class="bg-dark p-1 rounded rounded-5 fw-semibold" style="font-size: 12px;"><strong>STATUS</strong>: {{ i.status }}</span></li>
+              {% endif %}
+            </ul>
+
+            <button
+              type="button"
+              class="btn btn-outline-light col-12 more-btn"
+              data-bs-toggle="modal"
+              data-bs-target="#detailsModal{{ i.id }}">
+              More details
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="detailsModal{{ i.id }}" tabindex="-1" aria-labelledby="detailsModalLabel{{ i.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+
+            <div class="modal-header">
+              <h5 class="modal-title" id="detailsModalLabel{{ i.id }}">Details order {{ i.id }}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+              <p>Complete order information recorded on
+                <strong class='bg-warning rounded rounded-5 p-1'>{{ i.date|date:'Y/m/d' }}</strong>
+              </p>
+
+              {% if i.status == 'processing' %}
+                <span class='bg-secondary p-1 rounded rounded-5 text-white'>STATUS: {{ i.status }}</span><br>
+              {% elif i.status == 'rejected' %}
+                <span class='bg-danger text-white p-1 rounded rounded-5'>STATUS: {{ i.status }}</span><br>
+              {% elif i.status == 'accepted' %}
+                <span class='bg-warning text-dark p-1 rounded rounded-5'>STATUS: {{ i.status }}</span><br>
+              {% elif i.status == 'delivered' %}
+                <span class='bg-success text-white p-1 rounded rounded-5'>STATUS: {{ i.status }}</span><br>
+              {% elif i.status == 'returned' %}
+                <span class='bg-dark text-white p-1 rounded rounded-5'>STATUS: {{ i.status }}</span><br>
+              {% endif %}
+
+              <br/>
+              <h3>Items :</h3>
+              <ul class='bg-light border border-3 shadow rounded rounded-5 p-3' style="border-radius: 20px;">
+                {% for item in i.items.all %}
+                  <li class="mx-3"><strong>Product: </strong>{{ item.product.name }}</li>
+                  <li class="mx-3"><strong>Price: </strong>${{ item.price|format_price }}</li>
+                  <li class="mx-3"><strong>Quantity: </strong>{{ item.quantity }}</li>
+                  <li class="mx-3"><strong>Color: </strong>{{ item.color }}</li>
+                  <hr/>
+                {% endfor %}
+              </ul>
+
+              <br/>
+              <h3>Recipient information and address :</h3>
+              <ul class='bg-light border border-3 shadow rounded rounded-5 p-3' style="border-radius: 20px;">
+                <li class="mx-3"><strong>Recipient name: </strong>{{ i.recipient_name }}</li>
+                <li class="mx-3"><strong>Recipient number: </strong>{{ user.phone_number }}</li>
+                <li class="mx-3"><strong>Postal code: </strong>{{ i.postal_code }}</li>
+                <li class="mx-3"><strong>Address: </strong>{{ i.address }}</li>
+              </ul>
+
+              <h3>Bill :</h3>
+              <ul class='bg-light border border-3 shadow rounded rounded-5 p-3' style="border-radius: 20px;">
+                {% for item in i.items.all %}
+                  <li class='mb-2 mx-3'>
+                    <strong>{{ item.quantity }}</strong> 
+                    <strong>{{ item.color }}</strong> 
+                    <strong>{{ item.product.name }}</strong>, 
+                    <strong>$ {{ item.product.price }}</strong> each
+                    total <strong>${{ item.product.price|multiply:item.quantity|format_price }}</strong>
+                  </li>
+                {% endfor %}
+              </ul>
+
+              <h5 class='bg-success p-1 w-50 text-white text-center' style='border-radius:100px;'>
+                Total payment : ${{ i.total_price|format_price }}
+              </h5>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+              {% if i.status == 'processing' or i.status == 'accepted' %}
+                <a href="#" class="btn btn-danger"><i class="fa fa-trash"></i> Cancel the order</a>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    
+    {% empty %}
+      <p class="text-center"><i class="fa fa-times"></i> No orders found!</p>
+    {% endfor %}
+
+  </div>
+
+</div>
+
+
+<div class="container mt-5 ">
+  <ul class="pagination justify-content-center">
+    {% if orders_page.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1">« First</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previos</a>
+      </li>
+    {% endif %}
+
+    <li class="page-item active">
+      <span class="page-link bg-info border-info">
+        Page {{ orders_page.number }} from {{ orders_page.paginator.num_pages }}
+      </span>
+    </li>
+
+    {% if orders_page.has_next %}
+      <li class="page-item text">
+        <a class="page-link" href="?page={{ orders_page.next_page_number }}">Next</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ orders_page.paginator.num_pages }}">End »</a>
+      </li>
+    {% endif %}
+  </ul>
+</div>
+
+
+
+{% endif %}
+
+<hr class="container text-white my-5" />
+
+
+<script>
+  // Populate modal content from the button's data attributes
+  const detailsModal = document.getElementById('detailsModal');
+  detailsModal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
+    if (!button) return;
+
+    const title = button.getAttribute('data-title') || 'Details';
+    const body = button.getAttribute('data-body') || '<p>No additional details provided.</p>';
+
+    detailsModal.querySelector('.modal-title').textContent = title;
+
+    // Inject basic HTML content (consider sanitizing if content comes from users)
+    const modalBody = detailsModal.querySelector('.modal-body');
+    modalBody.innerHTML = body.trim();
+  });
+</script>
+
+{% endblock content %}

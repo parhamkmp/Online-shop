@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Create post for papillo kata blog
+{% endblock title %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <h1>    Create post for <strong>papillo kata blog</strong></h1>
+                <hr>
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary">Post in blog</button>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <br><br>
+    <br><br>
+    
+{% endblock content %}

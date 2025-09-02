@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+	change order status
+{% endblock title %}
+
+
+{% block content %}
+
+    <div class="container">
+    <div class="row">
+        <div class="col-7">
+            <h1>Change Order by id (<strong>{{ order.id }}</strong>) status:</h1>
+            <hr>
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <p>
+                    <li class="text-primary col-12">Status message is sent to the customer as an explanation.</li>
+                </p>
+                <button type="submit" class="btn btn-outline-dark">Change</button>
+            </form>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <br><br>
+    <br><br>
+
+
+    <script type="text/javascript">
+
+        var status_msg = document.getElementById('id_status_message');
+        var status_selects = document.getElementById('id_status');
+
+        status_selects.addEventListener('change', function() {
+            if(status_selects.value === 'processing')
+            {
+                status_msg = 'Your order status has changed to Processing.'
+            }
+
+            else if(status_selects.value === 'rejected')
+            {
+                status_msg.innerHTML = 'Your order status has changed to rejected.'   
+            }
+
+            else if(status_selects.value === 'accepted')
+            {
+                status_msg.innerHTML = 'Your order status has changed to Accepted.'
+            }
+
+            else if(status_selects.value === 'delivered')
+            {
+                status_msg.innerHTML = 'Your order status has changed to Received.'
+            }
+
+            else if(status_selects.value === 'returned')
+            {
+                status_msg.innerHTML = 'Your order status has changed to Returned.'
+            }
+
+            else
+            {
+                status_msg.innerHTML = 'ERROR !'
+            }
+
+        });
+
+    </script>
+
+{% endblock content %}
